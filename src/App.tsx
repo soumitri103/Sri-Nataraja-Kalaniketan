@@ -1,84 +1,116 @@
-import { useState, useEffect, useRef } from 'react';
-import { faceEngine } from './core/faceEngine';
-import { AttendanceDB } from './core/database';
-import CameraCapture from './components/CameraCapture';
-import EnrollmentForm from './components/EnrollmentForm';
-import AttendanceMarker from './components/AttendanceMarker';
-import Dashboard from './components/Dashboard';
+import React, { useState, useEffect } from 'react';
 import './App.css';
+import Dashboard from './components/Dashboard';
 
-type AppPage = 'enrollment' | 'attendance' | 'dashboard';
+interface FaceEngineInterface {
+  initialize: () => Promise<void>;
+  detectFace: (canvas: HTMLCanvasElement) => Promise<any>;
+  recognizeFace: (faceData: any) => Promise<string>;
+}
+
+// Placeholder face engine for now - will be replaced with WebAssembly version
+const placeholderFaceEngine: FaceEngineInterface = {
+  initialize: async () => {
+    console.log('Placeholder face engine initialized');
+  },
+  detectFace: async (canvas) => {
+    console.log('Placeholder: detecting face');
+    return null;
+  },
+  recognizeFace: async (faceData) => {
+    console.log('Placeholder: recognizing face');
+    return 'Unknown';
+  }
+};
 
 function App() {
-  const [currentPage, setCurrentPage] = useState<AppPage>('dashboard');
-  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState('enrollment');
+  const [enrolledCount, setEnrolledCount] = useState(0);
+  const [attendanceRecords, setAttendanceRecords] = useState<any[]>([]);
+  const [initError, setInitError] = useState<string | null>(null);
+  const [faceEngine, setFaceEngine] = useState<FaceEngineInterface | null>(null);
+  const [isInitializing, setIsInitializing] = useState(true);
 
   useEffect(() => {
-    const initializeApp = async () => {
+    // Initialize the face recognition engine
+    const initializeFaceEngine = async () => {
       try {
-        await faceEngine.initialize();
-        const savedFaceData = AttendanceDB.getFaceData();
-        if (savedFaceData) {
-          faceEngine.importData(savedFaceData);
+        console.log('Initializing Face Engine...');
+        
+        // For now, use placeholder engine
+        // TODO: Replace with actual WebAssembly faceEngineWasm implementation
+        await placeholderFaceEngine.initialize();
+        setFaceEngine(placeholderFaceEngine);
+        console.log('Face Engine initialized successfully');
+        
+        // Load enrollment data from localStorage
+        const storedStudents = localStorage.getItem('enrolledStudents');
+        if (storedStudents) {
+          try {
+            const students = JSON.parse(storedStudents);
+            setEnrolledCount(students.length);
+          } catch (e) {
+            console.error('Error parsing stored students:', e);
+          }
         }
-        setLoading(false);
       } catch (error) {
-        console.error('Failed to initialize app:', error);
-        setLoading(false);
+        console.error('Failed to initialize Face Engine:', error);
+        setInitError(`Initialization failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      } finally {
+        setIsInitializing(false);
       }
     };
 
-    initializeApp();
+    initializeFaceEngine();
   }, []);
 
-  if (loading) {
+  if (isInitializing) {
     return (
-      <div className="app-container loading">
-        <div className="loader">
-          <h2>Initializing Face Recognition System...</h2>
-          <p>Loading models and data...</p>
+      <div className="App">
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+          fontSize: '18px',
+          color: '#666'
+        }}>
+          <div>
+            <p>Initializing Face Recognition Engine...</p>
+            {initError && <p style={{ color: 'red', marginTop: '10px' }}>{initError}</p>}
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="app-container">
-      <header className="app-header">
-        <h1>Sri Nataraja Kalaniketan - Attendance Tracking</h1>
-        <p>Face Recognition Based Attendance System</p>
-      </header>
-
-      <nav className="app-nav">
-        <button
-          className={`nav-btn ${currentPage === 'enrollment' ? 'active' : ''}`}
-          onClick={() => setCurrentPage('enrollment')}
-        >
-          📝 Enrollment
-        </button>
-        <button
-          className={`nav-btn ${currentPage === 'attendance' ? 'active' : ''}`}
-          onClick={() => setCurrentPage('attendance')}
-        >
-          ✓ Mark Attendance
-        </button>
-        <button
-          className={`nav-btn ${currentPage === 'dashboard' ? 'active' : ''}`}
-          onClick={() => setCurrentPage('dashboard')}
-        >
-          📊 Dashboard
-        </button>
-      </nav>
-
-      <main className="app-main">
-        {currentPage === 'enrollment' && <EnrollmentForm onSuccess={() => setCurrentPage('dashboard')} />}
-        {currentPage === 'attendance' && <AttendanceMarker />}
-        {currentPage === 'dashboard' && <Dashboard />}
-      </main>
-
-      <footer className="app-footer">
-        <p>© 2024 Sri Nataraja Kalaniketan Institute. Face Recognition Attendance System v1.0</p>
-      </footer>
+    <div className="App">
+      {faceEngine ? (
+        <Dashboard
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+          enrolledCount={enrolledCount}
+          setEnrolledCount={setEnrolledCount}
+          attendanceRecords={attendanceRecords}
+          setAttendanceRecords={setAttendanceRecords}
+          faceEngine={faceEngine}
+        />
+      ) : (
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+          fontSize: '18px',
+          color: 'red'
+        }}>
+          <div>
+            <p>Face Recognition Engine Failed to Initialize</p>
+            {initError && <p>{initError}</p>}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
