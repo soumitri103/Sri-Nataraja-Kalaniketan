@@ -27,7 +27,6 @@
   },
   "overrides": {
     "node-fetch": "^3.3.2",
-    "@tensorflow/tfjs-core": "^4.11.0",
-    "esbuild": "^0.24.3"
+    "@tensorflow/tfjs-core": "^4.11.0"
   }
 }
