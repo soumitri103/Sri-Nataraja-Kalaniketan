@@ -43,13 +43,16 @@ src/
 ## Getting Started
 
 ### Prerequisites
-- Node.js 16+
+- Node.js 22.21.1 (specified in .nvmrc)
 - npm or yarn
 - Modern browser with WebGL support & camera access
 
 ### Installation
 
 ```bash
+# Use nvm to switch to the correct Node.js version
+nvm use
+
 # Install dependencies
 npm install
 
