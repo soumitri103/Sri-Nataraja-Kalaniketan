@@ -29,10 +29,12 @@ function EnrollmentForm({ onSuccess }: EnrollmentFormProps) {
       setMessage('Please fill in all required fields');
       return;
     }
+          // Save current student ID to localStorage for face capture
+      localStorage.setItem('currentStudentId', studentData.id);
     setStep('camera');
   };
 
-  const handleFaceCapture = async (canvas: HTMLCanvasElement) => {
+  const handleFaceCapture    = async (canvas: HTMLCanvasElement) => {
     setLoading(true);
     try {
       const descriptor = await faceEngine.extractFaceDescriptor(canvas);
@@ -141,7 +143,7 @@ function EnrollmentForm({ onSuccess }: EnrollmentFormProps) {
           <p>Take a clear photo of the student's face for enrollment</p>
           {loading && <div className="loading-spinner">Processing face...</div>}
           {!loading && (
-            <CameraCapture onCapture={handleFaceCapture} />
+            <CameraCapture onCapture={(faceData) => handleFaceCapture(faceData.canvas)} />
           )}
         </div>
       )}

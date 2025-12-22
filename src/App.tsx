@@ -4,10 +4,13 @@ import Dashboard from './components/Dashboard';
 import CameraCapture from './components/CameraCapture';
 import EnrollmentForm from './components/EnrollmentForm';
 import { faceEngine } from './core/faceEngine';
+import StudentsListTab from './components/StudentsListTab';
+// import AttendanceRecordsTab from './components/AttendanceRecordsTab';
 
 function App() {
-  const [currentPage, setCurrentPage] = useState<'enrollment' | 'attendance' | 'test'>('enrollment');
+  const [currentPage, setCurrentPage] = useState<'enrollment' | 'attendance' | 'students' | 'records' | 'test'>('enrollment');
   const [enrolledCount, setEnrolledCount] = useState(0);
+  
   const [attendanceRecords, setAttendanceRecords] = useState<any[]>([]);
   const [initError, setInitError] = useState<string | null>(null);
   const [isInitializing, setIsInitializing] = useState(true);
@@ -76,106 +79,43 @@ function App() {
 
   const renderPage = () => {
     switch (currentPage) {
-      case 'enrollment':
-        return (
-          <EnrollmentForm
-            faceEngine={faceEngine}
-            enrolledCount={enrolledCount}
-            setEnrolledCount={setEnrolledCount}
-          />
-        );
-      case 'attendance':
-        return (
-          <CameraCapture
-            faceEngine={faceEngine}
-            onAttendanceRecord={(record) => {
-              const updated = [...attendanceRecords, record];
-              setAttendanceRecords(updated);
-              localStorage.setItem('attendanceRecords', JSON.stringify(updated));
-            }}
-          />
-        );
-      case 'test':
-        return (
-          <div style={{ padding: '20px' }}>
-            <h2>Test Mode - Face Recognition System</h2>
-            <div style={{
-              backgroundColor: '#f0f0f0',
-              padding: '15px',
-              borderRadius: '5px',
-              marginBottom: '20px'
-            }}>
-              <p><strong>Status:</strong> <span style={{ color: 'green' }}>✓ Face-api.js Engine Ready</span></p>
-              <p><strong>Enrolled Students:</strong> {enrolledCount}</p>
-              <p><strong>Attendance Records:</strong> {attendanceRecords.length}</p>
-              <button 
-                onClick={() => {
-                  console.log('Face Engine Instance:', faceEngine);
-                  console.log('Models Loaded:', (faceEngine as any).modelsLoaded);
-                  alert('Check browser console (F12) for face engine details');
-                }}
-                style={{
-                  padding: '8px 16px',
-                  backgroundColor: '#007bff',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  marginRight: '10px'
-                }}
-              >
-                View Engine Details in Console
-              </button>
-              <button 
-                onClick={() => {
-                  // Test face detection capability
-                  const canvas = document.createElement('canvas');
-                  canvas.width = 320;
-                  canvas.height = 240;
-                  console.log('Test Mode: Ready to detect faces from canvas:', canvas);
-                  alert('Face detection is ready. Switch to Attendance mode to test with camera');
-                }}
-                style={{
-                  padding: '8px 16px',
-                  backgroundColor: '#28a745',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer'
-                }}
-              >
-                Test Face Detection
-              </button>
-            </div>
-            <div style={{
-              backgroundColor: '#e7f3ff',
-              padding: '15px',
-              borderRadius: '5px',
-              marginTop: '20px'
-            }}>
-              <h3>How to Use:</h3>
-              <ol>
-                <li><strong>Enrollment:</strong> Register students' faces by clicking "📝 Enrollment"</li>
-                <li><strong>Attendance:</strong> Track attendance using face recognition with "✓ Attendance"</li>
-                <li><strong>Test:</strong> Verify system functionality with "🧪 Test" (this page)</li>
-              </ol>
-            </div>
-          </div>
-        );
-      default:
-        return (
-          <Dashboard
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-            enrolledCount={enrolledCount}
-            setEnrolledCount={setEnrolledCount}
-            attendanceRecords={attendanceRecords}
-            setAttendanceRecords={setAttendanceRecords}
-            faceEngine={faceEngine}
-          />
-        );
-    }
-  };
+case 'enrollment':
+      return (
+        <EnrollmentForm
+          onSuccess={() => {
+            setCurrentPage('attendance');
+          }}
+        />
+      );
+    case 'attendance':
+      return (
+        <Dashboard
+          enrolledCount={enrolledCount}
+          attendanceLogs={attendanceRecords}
+        />
+      );
+    case 'test':
+      return (
+        <div>
+          <h2>Test Page</h2>
+          <p>Face Recognition Testing</p>
+        </div>
+      );
+            case 'students':
+      return <StudentsListTab students={[]} />;
+//     case 'records':
+      // return <AttendanceRecordsTab attendanceLogs={attendanceRecords} />;
+      // );
+    default:
+      return (
+        <EnrollmentForm
+          onSuccess={() => {
+            setCurrentPage('attendance');
+          }}
+        />
+      );
+  }
+};
 
   return (
     <div className="App">
@@ -225,23 +165,40 @@ function App() {
         >
           ✓ Attendance
         </button>
-        
-        <button
-          onClick={() => setCurrentPage('test')}
+                <button
+          onClick={() => setCurrentPage('students')}
           style={{
             padding: '8px 16px',
-            backgroundColor: currentPage === 'test' ? '#ffc107' : '#e9ecef',
-            color: currentPage === 'test' ? 'white' : 'black',
+            backgroundColor: currentPage === 'students' ? '#d4edda' : '#f8f9fa',
+            color: currentPage === 'students' ? '#155724' : '#495057',
             border: '1px solid #dee2e6',
             borderRadius: '4px',
             cursor: 'pointer',
             fontSize: '14px',
-            fontWeight: currentPage === 'test' ? 'bold' : 'normal',
+            fontWeight: currentPage === 'students' ? 'bold' : 'normal',
             transition: 'all 0.2s'
           }}
         >
-          🧪 Test
+          👥 Students
         </button>
+
+        <button
+          onClick={() => setCurrentPage('records')}
+          style={{
+            padding: '8px 16px',
+            backgroundColor: currentPage === 'records' ? '#cce5ff' : '#f8f9fa',
+            color: currentPage === 'records' ? '#004085' : '#495057',
+            border: '1px solid #dee2e6',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            fontSize: '14px',
+            fontWeight: currentPage === 'records' ? 'bold' : 'normal',
+            transition: 'all 0.2s'
+          }}
+        >
+          📊 Records
+        </button>
+        
 
         <span style={{
           fontSize: '12px',
