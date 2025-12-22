@@ -44,7 +44,7 @@ function EnrollmentForm({ onSuccess }: EnrollmentFormProps) {
         return;
       }
 
-      faceEngine.enrollFace(studentData.id, descriptor, studentData.name);
+      await faceEngine.enrollFace(studentData.id, descriptor, studentData.name);
       
       await AttendanceDB.saveStudent({
         id: studentData.id,
