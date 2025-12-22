@@ -105,6 +105,7 @@ function CameraCapture({ onCapture, label = 'Capture Face' }: CameraCaptureProps
       setCapturedImage('');
     } finally {
       setIsProcessing(false);
+            stopCamera();
     }
   };
 
