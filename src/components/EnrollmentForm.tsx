@@ -143,7 +143,7 @@ function EnrollmentForm({ onSuccess }: EnrollmentFormProps) {
           <p>Take a clear photo of the student's face for enrollment</p>
           {loading && <div className="loading-spinner">Processing face...</div>}
           {!loading && (
-            <CameraCapture onCapture={(faceData) => handleFaceCapture(faceData.canvas)} />
+            <CameraCapture onCapture={(canvas) => handleFaceCapture(canvas)} />
           )}
         </div>
       )}
