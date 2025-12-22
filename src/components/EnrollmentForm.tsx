@@ -46,7 +46,7 @@ function EnrollmentForm({ onSuccess }: EnrollmentFormProps) {
 
       faceEngine.enrollFace(studentData.id, descriptor, studentData.name);
       
-      AttendanceDB.saveStudent({
+      await AttendanceDB.saveStudent({
         id: studentData.id,
         name: studentData.name,
         rollNo: studentData.rollNo,
@@ -54,7 +54,7 @@ function EnrollmentForm({ onSuccess }: EnrollmentFormProps) {
       });
 
       const faceData = faceEngine.exportData();
-      AttendanceDB.saveFaceData(faceData);
+      await AttendanceDB.saveFaceData(faceData);
 
       setStep('success');
     } catch (error) {
