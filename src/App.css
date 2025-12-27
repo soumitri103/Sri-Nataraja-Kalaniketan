@@ -19,6 +19,8 @@ body {
   flex-direction: column;
 }
 
+/* App layout */
+
 .app-container {
   display: flex;
   flex-direction: column;
@@ -89,6 +91,8 @@ body {
   box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
 }
 
+/* Loading state */
+
 .app-container.loading {
   display: flex;
   align-items: center;
@@ -123,11 +127,16 @@ body {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
-/* Form Styles */
+/* Form styles */
+
 form {
   display: flex;
   flex-direction: column;
@@ -142,7 +151,8 @@ label {
   letter-spacing: 0.5px;
 }
 
-input, textarea {
+input,
+textarea {
   padding: 12px;
   border: 2px solid #ddd;
   border-radius: 5px;
@@ -150,11 +160,14 @@ input, textarea {
   transition: border-color 0.3s ease;
 }
 
-input:focus, textarea:focus {
+input:focus,
+textarea:focus {
   outline: none;
   border-color: #3498db;
   box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
 }
+
+/* Generic button (non-nav) */
 
 button {
   padding: 12px 24px;
@@ -178,7 +191,8 @@ button:active {
   transform: translateY(0);
 }
 
-/* Table Styles */
+/* Table styles */
+
 table {
   width: 100%;
   border-collapse: collapse;
@@ -205,7 +219,8 @@ tr:hover {
   background-color: #f9f9f9;
 }
 
-/* Status Badge Styles */
+/* Status badges */
+
 .status-badge {
   display: inline-block;
   padding: 6px 12px;
@@ -225,36 +240,8 @@ tr:hover {
   color: #721c24;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  .app-header h1 {
-    font-size: 24px;
-  }
+/* Camera container */
 
-  .app-nav {
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .nav-btn {
-    width: 100%;
-  }
-
-  .app-content {
-    padding: 15px;
-    margin: 10px;
-  }
-
-  table {
-    font-size: 12px;
-  }
-
-  th, td {
-    padding: 8px 10px;
-  }
-}
-
-/* Camera Container Styles */
 .camera-container {
   position: relative;
   width: 100%;
@@ -272,7 +259,8 @@ video {
   background-color: #000;
 }
 
-/* Statistics Container */
+/* Statistics cards */
+
 .stats-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -300,4 +288,35 @@ video {
 .stat-card .number {
   font-size: 36px;
   font-weight: 700;
+}
+
+/* Responsive design */
+
+@media (max-width: 768px) {
+  .app-header h1 {
+    font-size: 24px;
+  }
+
+  .app-nav {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .nav-btn {
+    width: 100%;
+  }
+
+  .app-content {
+    padding: 15px;
+    margin: 10px;
+  }
+
+  table {
+    font-size: 12px;
+  }
+
+  th,
+  td {
+    padding: 8px 10px;
+  }
 }
